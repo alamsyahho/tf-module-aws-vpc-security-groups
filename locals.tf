@@ -194,14 +194,22 @@ locals {
       for i, rule in group["inbound"] : {
         sg_name   = group.name
         rule_name = join("_", ["inbound_rule", i])
-        inbound_rule = merge(rule, length(split("-", rule.ports)) == 2 ? zipmap(["from_port", "to_port"], split("-", rule.ports)) : {"from_port": rule.ports, "to_port":rule.ports})
+        inbound_rule = merge(
+          rule,
+          length(
+            split("-", rule.ports)) == 2
+            ? zipmap(
+                ["from_port", "to_port"],
+                length(regexall("^-", rule.ports)) == 1 ? [rule.ports, rule.ports] : split("-", rule.ports))
+              )
+            : {"from_port": rule.ports, "to_port":rule.ports}
+          )
       }
     ]
   ])
 
   inbound_rules = { for obj in local.ir : "${obj.sg_name}:${obj.rule_name}" => obj.inbound_rule }
 }
-
 
 # -------------------------------------------------------------------------------------------------
 # Outbound rules transformations
