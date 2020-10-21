@@ -200,7 +200,7 @@ locals {
             split("-", rule.ports)) == 2
             ? zipmap(
                 ["from_port", "to_port"],
-                length(regexall("^-", rule.ports)) == 1 ? [rule.ports, rule.ports] : split("-", rule.ports))
+                length(regexall("^-", rule.ports)) == 1 ? [rule.ports, rule.ports] : split("-", rule.ports)
               )
             : {"from_port": rule.ports, "to_port":rule.ports}
           )
